@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — HRIS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #161d2e;
+    --border: #1f2d45;
+    --accent: #3b82f6;
+    --accent2: #10b981;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── Grid noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glow blobs ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+  .blob-1 { width: 600px; height: 600px; background: #3b82f6; top: -200px; left: -200px; }
+  .blob-2 { width: 400px; height: 400px; background: #10b981; bottom: 0; right: -100px; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 100px 0 60px;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.25);
+    padding: 6px 14px; border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-tag::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: #fff;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    margin-top: 20px;
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 560px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 48px 0;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .stat {
+    background: var(--card);
+    padding: 24px 28px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.9rem;
+    font-weight: 500;
+    color: #fff;
+    display: block;
+  }
+
+  .stat-val span { color: var(--accent); }
+
+  .stat-lbl {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SECTION ── */
+  .section { padding: 64px 0; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 36px;
+  }
+
+  /* ── PROJECT CARD ── */
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .project-header {
+    padding: 24px 28px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .project-meta {}
+
+  .project-badges {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-blue  { background: rgba(59,130,246,0.12); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
+  .badge-green { background: rgba(16,185,129,0.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.2); }
+  .badge-amber { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.2); }
+
+  .project-title {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .project-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .project-impact {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.15);
+    border-radius: 10px;
+    padding: 10px 16px;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 130px;
+  }
+
+  .impact-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--accent2);
+    display: block;
+  }
+
+  .impact-lbl {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-toggle {
+    padding: 0 28px;
+    margin: 16px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .toggle-btn:hover {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.4);
+  }
+
+  .code-section {
+    display: none;
+    padding: 0 28px 0;
+    margin-top: 12px;
+  }
+
+  .code-section.open { display: block; }
+
+  .code-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: #e2e8f0;
+  }
+
+  .kw  { color: #c084fc; } /* keyword */
+  .fn  { color: #60a5fa; } /* function */
+  .str { color: #86efac; } /* string */
+  .cm  { color: #475569; font-style: italic; } /* comment */
+  .nu  { color: #fbbf24; } /* number */
+  .cl  { color: #f9a8d4; } /* class */
+  .op  { color: #94a3b8; } /* operator */
+
+  /* ── flow diagram ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 28px;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .flow-arrow {
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── project footer ── */
+  .project-footer {
+    padding: 16px 28px 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tech-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+  }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .skill-group {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+
+  .skill-group-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .skill-item:last-child { border-bottom: none; }
+
+  .skill-bar {
+    width: 80px; height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    animation: grow 1.2s ease both;
+  }
+
+  @keyframes grow { from { width: 0; } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* ── footer ── */
+  .footer {
+    padding: 48px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .project-header { flex-direction: column; }
+    .project-impact { text-align: left; min-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="container">
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-tag">HRIS</div>
+    <h1>สร้างระบบที่<br><em>ลดงานจริง</em><br>วัดผลได้จริง</h1>
+    <p class="hero-sub">ออกแบบและพัฒนาเครื่องมืออัตโนมัติสำหรับงาน HR ด้วย Python, Google Apps Script และ AI — ทุก project มีตัวเลขพิสูจน์ผลลัพธ์</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-val"><span>98</span>%</span>
+        <div class="stat-lbl">ลดเวลารายงาน KPI</div>
+      </div>
+      <div class="stat">
+        <span class="stat-val"><span>9,000</span>+</span>
+        <div class="stat-lbl">พนักงานในระบบ</div>
+      </div>
+      <div class="stat">
+        <span class="stat-val"><span>6</span></span>
+        <div class="stat-lbl">Projects ที่ Deploy จริง</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ── PROJECTS ── -->
+  <section class="section">
+    <div class="section-label">// projects</div>
+    <div class="section-title">ผลงานที่พัฒนา</div>
+
+    <!-- PROJECT 1 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="project-badges">
+            <span class="badge badge-green">✅ Deploy แล้ว</span>
+            <span class="badge badge-blue">Google Apps Script</span>
+            <span class="badge badge-blue">LINE Bot</span>
+          </div>
+          <div class="project-title">KPI Auto-Collect System</div>
+          <div class="project-desc">ระบบเก็บ KPI อัตโนมัติผ่าน LINE Bot เชื่อมต่อ Google Sheets — พนักงานตอบ AL Code ใน Line แล้วระบบบันทึกลง Sheet ทันที สิ้นเดือนดึง Report ได้เลย</div>
+        </div>
+        <div class="project-impact">
+          <span class="impact-val">98%</span>
+          <div class="impact-lbl">TIME SAVED</div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step">ซุปแจ้ง AL</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">LINE Webhook</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">GAS จับ Pattern</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Google Sheets</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Auto Report</div>
+      </div>
+
+      <div class="code-toggle">
+        <button class="toggle-btn" onclick="toggleCode(this)">{'</>'} ดู Code ตัวอย่าง</button>
+      </div>
+      <div class="code-section">
+        <div class="code-label">GAS — webhook handler (excerpt)</div>
+        <pre><span class="kw">function</span> <span class="fn">doPost</span>(e) {
+  <span class="kw">var</span> data  <span class="op">=</span> <span class="cl">JSON</span>.<span class="fn">parse</span>(e.postData.contents);
+  <span class="kw">var</span> event <span class="op">=</span> data.events[<span class="nu">0</span>];
+  <span class="kw">var</span> text  <span class="op">=</span> event.message.text;
+
+  <span class="cm">// จับ Pattern AL + slash commands</span>
+  <span class="kw">var</span> match <span class="op">=</span> <span class="fn">getMatchPattern</span>(text);
+  <span class="kw">if</span> (<span class="op">!</span>match <span class="op">||</span> <span class="op">!</span>quotedMessageId) <span class="kw">return</span>;
+
+  <span class="cm">// บันทึกลง Sheet ตาม type</span>
+  <span class="kw">if</span> (match.<span class="fn">startsWith</span>(<span class="str">"AL"</span>)) {
+    extractSheet.<span class="fn">appendRow</span>([dateExcel, match, originalText, <span class="str">""</span>, senderName]);
+  } <span class="kw">else</span> {
+    allCaseSheet.<span class="fn">appendRow</span>([originalTimestamp, match, originalText]);
+  }
+}</pre>
+      </div>
+
+      <div class="project-footer">
+        <span class="tech-tag">Google Apps Script</span>
+        <span class="tech-tag">LINE Messaging API</span>
+        <span class="tech-tag">Webhook</span>
+        <span class="tech-tag">Google Sheets</span>
+        <span class="tech-tag">Gemini AI API</span>
+      </div>
+    </div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="project-badges">
+            <span class="badge badge-green">✅ Deploy แล้ว</span>
+            <span class="badge badge-blue">Python</span>
+            <span class="badge badge-blue">Selenium</span>
+          </div>
+          <div class="project-title">FastTrack RPA — All-in-One HR Operations</div>
+          <div class="project-desc">ระบบ 6-in-1 จัดการงาน HR Operations อัตโนมัติ ครอบคลุม User-Pass, ดึงประวัติ, Reset UDID, ตรวจ Roster, Export Excel, สร้างบัญชีพนักงาน</div>
+        </div>
+        <div class="project-impact">
+          <span class="impact-val">94%</span>
+          <div class="impact-lbl">TIME SAVED</div>
+        </div>
+      </div>
+
+      <div class="code-toggle">
+        <button class="toggle-btn" onclick="toggleCode(this)">{'</>'} ดู Code ตัวอย่าง</button>
+      </div>
+      <div class="code-section">
+        <div class="code-label">Python — Selenium automation (excerpt)</div>
+        <pre><span class="kw">for</span> index, row <span class="kw">in</span> df_main.<span class="fn">iterrows</span>():
+    al_code <span class="op">=</span> <span class="fn">str</span>(row[<span class="str">'AL'</span>]).<span class="fn">strip</span>()
+
+    <span class="kw">if</span> al_code <span class="op">!=</span> <span class="str">""</span>:
+        driver.<span class="fn">get</span>(main_url)
+        time.<span class="fn">sleep</span>(<span class="nu">2</span>)
+
+        <span class="cm"># คลิก Retrieve → ค้นหา AL</span>
+        retrieve_btn <span class="op">=</span> driver.<span class="fn">find_element</span>(By.XPATH,
+            <span class="str">"//button[contains(., 'Retrieve')]"</span>)
+        retrieve_btn.<span class="fn">click</span>()
+
+        search_box.<span class="fn">send_keys</span>(al_code)
+        search_btn.<span class="fn">click</span>()
+
+        <span class="cm"># Export Excel อัตโนมัติ</span>
+        export_btn <span class="op">=</span> driver.<span class="fn">find_element</span>(By.ID, <span class="str">"exporttoexcelLobour"</span>)
+        export_btn.<span class="fn">click</span>()
+        <span class="fn">print</span>(<span class="str">f"✅ ดาวน์โหลด {al_code} เรียบร้อย"</span>)</pre>
+      </div>
+
+      <div class="project-footer">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">Selenium</span>
+        <span class="tech-tag">pandas</span>
+        <span class="tech-tag">openpyxl</span>
+      </div>
+    </div>
+
+    <!-- PROJECT 3 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="project-badges">
+            <span class="badge badge-amber">🔧 In Development</span>
+            <span class="badge badge-blue">Flask</span>
+            <span class="badge badge-blue">SQLite</span>
+            <span class="badge badge-blue">Selenium</span>
+          </div>
+          <div class="project-title">Recruit-AutoPost</div>
+          <div class="project-desc">Full-stack automation สำหรับโพสต์รับสมัครงานบน Facebook หลายกลุ่มพร้อมกัน มี Campaign Manager, Scheduler, Post Templates และ Activity Logs</div>
+        </div>
+        <div class="project-impact">
+          <span class="impact-val">∞</span>
+          <div class="impact-lbl">GROUPS/POST</div>
+        </div>
+      </div>
+
+      <div class="code-toggle">
+        <button class="toggle-btn" onclick="toggleCode(this)">{'</>'} ดู Code ตัวอย่าง</button>
+      </div>
+      <div class="code-section">
+        <div class="code-label">Python — Database Schema (excerpt)</div>
+        <pre><span class="kw">class</span> <span class="cl">Campaign</span>(db.Model):
+    <span class="cm"># 1 ตำแหน่งงาน = 1 Campaign</span>
+    id       <span class="op">=</span> db.Column(db.Integer, primary_key<span class="op">=</span><span class="kw">True</span>)
+    name     <span class="op">=</span> db.Column(db.String(<span class="nu">200</span>))  <span class="cm"># ชื่อตำแหน่ง</span>
+    color    <span class="op">=</span> db.Column(db.String(<span class="nu">20</span>))   <span class="cm"># สีแคมเปญ</span>
+    groups   <span class="op">=</span> db.relationship(<span class="str">'Group'</span>,        backref<span class="op">=</span><span class="str">'campaign'</span>)
+    templates<span class="op">=</span> db.relationship(<span class="str">'PostTemplate'</span>, backref<span class="op">=</span><span class="str">'campaign'</span>)
+
+<span class="kw">class</span> <span class="cl">PostLog</span>(db.Model):
+    <span class="cm"># ติดตามสถานะโพสต์ทุกรายการ</span>
+    status       <span class="op">=</span> db.Column(db.String(<span class="nu">20</span>), default<span class="op">=</span><span class="str">'pending'</span>)
+    scheduled_at <span class="op">=</span> db.Column(db.DateTime)
+    posted_at    <span class="op">=</span> db.Column(db.DateTime, nullable<span class="op">=</span><span class="kw">True</span>)
+    error_message<span class="op">=</span> db.Column(db.Text, nullable<span class="op">=</span><span class="kw">True</span>)</pre>
+      </div>
+
+      <div class="project-footer">
+        <span class="tech-tag">Flask</span>
+        <span class="tech-tag">SQLAlchemy</span>
+        <span class="tech-tag">SQLite</span>
+        <span class="tech-tag">Selenium</span>
+        <span class="tech-tag">Facebook Bot</span>
+        <span class="tech-tag">Scheduler</span>
+      </div>
+    </div>
+
+    <!-- PROJECT 4 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="project-badges">
+            <span class="badge badge-green">✅ Deploy แล้ว</span>
+            <span class="badge badge-blue">Python</span>
+            <span class="badge badge-blue">pandas</span>
+          </div>
+          <div class="project-title">Excel Data Reconciliation</div>
+          <div class="project-desc">ระบบเปรียบเทียบและตรวจสอบข้อมูลพนักงาน 2 ชุดอัตโนมัติ รองรับ Excel หลาย Format พร้อม export รายงานจุดที่ไม่ตรงกัน</div>
+        </div>
+        <div class="project-impact">
+          <span class="impact-val">Auto</span>
+          <div class="impact-lbl">RECONCILE</div>
+        </div>
+      </div>
+
+      <div class="code-toggle">
+        <button class="toggle-btn" onclick="toggleCode(this)">{'</>'} ดู Code ตัวอย่าง</button>
+      </div>
+      <div class="code-section">
+        <div class="code-label">Python — combine & parse Excel (excerpt)</div>
+        <pre><span class="kw">for</span> file_path <span class="kw">in</span> file_list:
+    <span class="kw">with</span> <span class="fn">open</span>(file_path, <span class="str">'r'</span>, encoding<span class="op">=</span><span class="str">'utf-8'</span>, errors<span class="op">=</span><span class="str">'replace'</span>) <span class="kw">as</span> f:
+        raw_html <span class="op">=</span> f.<span class="fn">read</span>()
+
+    <span class="cm"># แกะ HTML table → DataFrame</span>
+    soup <span class="op">=</span> <span class="cl">BeautifulSoup</span>(raw_html, <span class="str">'html.parser'</span>)
+    rows <span class="op">=</span> soup.<span class="fn">find_all</span>(<span class="str">'tr'</span>)
+
+    data <span class="op">=</span> []
+    <span class="kw">for</span> row <span class="kw">in</span> rows:
+        cells     <span class="op">=</span> row.<span class="fn">find_all</span>([<span class="str">'td'</span>, <span class="str">'th'</span>])
+        clean_row <span class="op">=</span> [cell.<span class="fn">get_text</span>(strip<span class="op">=</span><span class="kw">True</span>) <span class="kw">for</span> cell <span class="kw">in</span> cells]
+        data.<span class="fn">append</span>(clean_row)
+
+    df <span class="op">=</span> pd.<span class="cl">DataFrame</span>(data)
+    df.<span class="fn">to_excel</span>(writer, sheet_name<span class="op">=</span>sheet_name, index<span class="op">=</span><span class="kw">False</span>)
+    <span class="fn">print</span>(<span class="str">f"✅ รวมไฟล์ {file_name} สำเร็จ"</span>)</pre>
+      </div>
+
+      <div class="project-footer">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">pandas</span>
+        <span class="tech-tag">BeautifulSoup</span>
+        <span class="tech-tag">openpyxl</span>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="divider">
+
+  <!-- ── SKILLS ── -->
+  <section class="section">
+    <div class="section-label">// skills</div>
+    <div class="section-title">ทักษะ</div>
+
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">// Technical</div>
+        <div class="skill-item"><span>Python (pandas, openpyxl)</span><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+        <div class="skill-item"><span>Google Apps Script</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+        <div class="skill-item"><span>LINE Bot & Webhook</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+        <div class="skill-item"><span>Selenium Automation</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
+        <div class="skill-item"><span>Power BI / Excel</span><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+        <div class="skill-item"><span>REST API / JSON</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-group-title">// HR Domain</div>
+        <div class="skill-item"><span>HRIS Management</span><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div>
+        <div class="skill-item"><span>Workforce Data (9K+ คน)</span><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div>
+        <div class="skill-item"><span>KPI Reporting</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+        <div class="skill-item"><span>Recruitment Support</span><div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div></div>
+        <div class="skill-item"><span>PDPA Compliance</span><div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div></div>
+        <div class="skill-item"><span>Process Improvement</span><div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <footer class="footer">
+    <div>Poramet Rungmee · HRIS · porametrungmee@gmail.com</div>
+    <div style="margin-top:8px;color:#334155">Built with intention. Every project has a number to prove it.</div>
+  </footer>
+
+</div>
+
+<script>
+  function toggleCode(btn) {
+    const card = btn.closest('.project-card');
+    const section = card.querySelector('.code-section');
+    const isOpen = section.classList.contains('open');
+    section.classList.toggle('open', !isOpen);
+    btn.textContent = isOpen ? "{'</>'} ดู Code ตัวอย่าง" : "{'</>'} ซ่อน Code";
+  }
+</script>
+</body>
+</html>
